@@ -1,0 +1,84 @@
+Project Editorial – Building Your Own LangChain (Lite Version)
+==============================================================
+
+Overview:
+---------
+This project will guide you to build an initial version of LangChain from scratch. Unlike minimal demos, you will design a modular framework with the following major components:
+
+1. Core Abstractions  
+   Define abstract interfaces for:
+   - Chain Execution (how steps are run and managed)
+   - LLM Integration (how prompts are sent and responses received)
+   - Memory Management (how context is stored and retrieved)
+
+2. Chain Execution Framework  
+   Build a chain executor that:
+   - Allows adding processing steps (functions) with strict input/output contracts.
+   - Supports nested chains, detailed error handling, and extensive logging.
+   - Updates a shared context across steps.
+
+3. Prompt Management  
+   Develop a prompt system that:
+   - Dynamically renders templates with variable substitution.
+   - Validates required variables.
+   - Supports caching and future extensions (e.g., conditional logic).
+
+4. Memory and Context Handling  
+   Create an in-memory storage module that:
+   - Saves and loads context data.
+   - Supports merging, snapshotting, and possibly versioning.
+   - Includes thorough error checking and logging.
+
+5. LLM Integration  
+   Implement a dummy LLM that:
+   - Simulates text generation with configurable parameters (e.g., delays, randomness).
+   - Logs each call and simulates error conditions.
+   - Can later be replaced with a real API integration.
+
+6. Logging and Debugging  
+   Set up an advanced logging module that:
+   - Supports multiple output streams (console and file).
+   - Allows adjustable verbosity levels and log rotation.
+   - Is used consistently across all modules.
+
+7. Agent and Tools (Advanced Features)  
+   (Optional but recommended to resemble real LangChain)  
+   - Create a basic Agent that uses your chain executor and LLM to decide which action to take.
+   - Build a stub for external tool integration (e.g., a search tool).
+   - These components encourage you to design a flexible system.
+
+8. Command-Line Interface (CLI)  
+   Build a CLI that:
+   - Accepts user input and parameters.
+   - Instantiates and runs your chain with demo steps.
+   - Displays detailed output and logs.
+
+9. Testing and Documentation  
+   Write comprehensive unit and integration tests and create documentation (in the `docs/` and `cookbook/` folders) that explain:
+   - The design and purpose of each component.
+   - How to run and extend the system.
+   - Future improvement ideas.
+
+---------------------------------------------------------------------
+Detailed Hints & Tasks:
+---------------------------------------------------------------------
+
+Task 1: Core Abstractions  
+- Create files: `chain_interface.py`, `llm_interface.py`, and `memory_interface.py` under `libs/core/langchain-core/`.
+- **Hint:** Use Python’s ABC module. For each method, include detailed docstrings and add logging and error checks.
+- *Example Hint:*  
+  In `chain_interface.py`, define:
+  ```python
+  from abc import ABC, abstractmethod
+  
+  class ChainInterface(ABC):
+      @abstractmethod
+      def run(self, input_data: dict) -> dict:
+          # TODO: Validate input_data, log the start/end, and return updated context.
+          # Hint: Use try/except blocks and log any exceptions.
+          pass
+  
+      @abstractmethod
+      def add_step(self, step):
+          # TODO: Check if step is callable, log the addition, and append it to an internal list.
+          pass
