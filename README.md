@@ -1,9 +1,10 @@
-Project Editorial – Building a Company MVP using a LangGraph-Inspired Agentic Workflow
+Project Editorial – Build langchain lite
 ====================================================================================
 
 Overview:
 ---------
-This project is designed to automate the creation of a company MVP using a LangGraph-inspired, agentic workflow. 
+This project will help you build your own version of the langchain framework. 
+
 It provides a modular framework that incorporates:
   - Graph-based execution (DAG) for managing complex workflows.
   - Dynamic state management with checkpointing and rollback.
@@ -11,10 +12,6 @@ It provides a modular framework that incorporates:
   - Integration of external tools via a standardized interface.
   - A command-line interface (CLI) for interactive use.
   - Comprehensive logging, testing, and documentation.
-
-The generated project skeleton will include placeholder files with detailed TODOs and hints to help you 
-develop a fully functional MVP framework. Your final implementation should eventually comprise approximately 
-700+ lines of original code.
 
 ---------------------------------------------------------------------
 Task Breakdown & Detailed Hints:
@@ -88,29 +85,18 @@ Example Hint in chain_executor.py:
     class ChainExecutor(ChainInterface):
         def __init__(self):
             # Initialize dictionaries for nodes and dependencies
-            self.nodes = {}           # node_id -> function
-            self.dependencies = {}    # node_id -> set(dependency node_ids)
-            self.dependents = {}      # node_id -> set(dependent node_ids)
-            self.state_manager = None # To be set by the user
-
+            
         def add_node(self, node_id, function, dependencies=None):
             """
             Add a node to the DAG.
             TODO: Validate node_id uniqueness and that function is callable.
             """
-            if dependencies is None:
-                dependencies = []
-            self.nodes[node_id] = function
-            self.dependencies[node_id] = set(dependencies)
-            for dep in dependencies:
-                self.dependents.setdefault(dep, set()).add(node_id)
-            self.dependents.setdefault(node_id, set())
-
+            
         def set_state_manager(self, state_manager):
             """
             Attach a StateManager to handle global state.
             """
-            self.state_manager = state_manager
+            
 
         def run(self, initial_state=None):
             """
@@ -118,34 +104,6 @@ Example Hint in chain_executor.py:
             TODO: Implement Kahn's algorithm for node execution order.
             """
             # Initialize state manager if not provided
-            if self.state_manager is None:
-                from src.main.state_manager import StateManager
-                self.state_manager = StateManager(initial_state or {})
-            else:
-                if initial_state is not None:
-                    self.state_manager.state = initial_state.copy()
-
-            indegree = {node: len(self.dependencies[node]) for node in self.nodes}
-            ready = deque([node for node, deg in indegree.items() if deg == 0])
-            execution_order = []
-            while ready:
-                node_id = ready.popleft()
-                execution_order.append(node_id)
-                self.state_manager.checkpoint()
-                try:
-                    result = self.nodes[node_id](self.state_manager.get_state())
-                    if result and isinstance(result, dict):
-                        self.state_manager.update_state(result)
-                except Exception as e:
-                    self.state_manager.rollback()
-                    raise RuntimeError(f"Execution failed at node '{node_id}': {e}") from e
-                for dep in self.dependents.get(node_id, []):
-                    indegree[dep] -= 1
-                    if indegree[dep] == 0:
-                        ready.append(dep)
-            if len(execution_order) < len(self.nodes):
-                raise RuntimeError("Cycle detected or unmet dependency in the DAG.")
-            return self.state_manager.get_state()
 
 ---------------------------------------------------------------------
 Task 3: Prompt Management
@@ -169,18 +127,14 @@ Example Hint:
             """
             TODO: Validate that the template contains variable placeholders and store it.
             """
-            self.template = template
+            
 
         def render(self, **kwargs) -> str:
             """
             Render the template with provided keyword arguments.
             TODO: Use string.Template and handle KeyError for missing variables.
             """
-            tmpl = string.Template(self.template)
-            try:
-                return tmpl.safe_substitute(**kwargs)
-            except KeyError as e:
-                raise ValueError(f"Missing variable for prompt: {e}")
+            
 
 ---------------------------------------------------------------------
 Task 4: Memory and State Management
@@ -199,23 +153,18 @@ Example Hint (state_manager.py):
 -------------------------------
     class StateManager:
         def __init__(self, initial_state=None):
-            self.state = initial_state.copy() if initial_state else {}
-            self._history = []
-
+            
         def get_state(self):
-            return self.state.copy()
+            
 
         def update_state(self, updates):
-            if not isinstance(updates, dict):
-                raise TypeError("Updates must be a dictionary.")
-            self.state.update(updates)
+            
 
         def checkpoint(self):
-            self._history.append(self.state.copy())
+           
 
         def rollback(self):
-            if self._history:
-                self.state = self._history.pop()
+            
 
 ---------------------------------------------------------------------
 Task 5: LLM Integration
@@ -235,14 +184,10 @@ Example Hint:
 
     class DummyLLM(LLMInterface):
         def __init__(self):
-            self.delay = 0.5
-            self.error_rate = 0.1
+            
 
         def generate(self, prompt: str) -> str:
-            time.sleep(self.delay)
-            if random.random() < self.error_rate:
-                raise Exception("Simulated LLM error")
-            return f"Simulated response to: {prompt}"
+            
 
 ---------------------------------------------------------------------
 Task 6: Logging and Debugging
@@ -260,14 +205,7 @@ Example Hint:
     import logging
 
     def setup_logger(name: str = "langchain", level=logging.DEBUG) -> logging.Logger:
-        logger = logging.getLogger(name)
-        if not logger.handlers:
-            sh = logging.StreamHandler()
-            formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-            sh.setFormatter(formatter)
-            logger.addHandler(sh)
-        logger.setLevel(level)
-        return logger
+        
 
 ---------------------------------------------------------------------
 Task 7: Advanced Components – Agent and Tools
@@ -289,18 +227,14 @@ Example Hint (agent.py):
     class Agent:
         def __init__(self, llm, chain_executor):
             # TODO: Store the provided LLM and chain_executor.
-            self.llm = llm
-            self.chain_executor = chain_executor
-
+            
         def decide(self, input_data: dict) -> str:
             # TODO: Generate a decision prompt and return the LLM response.
-            decision = self.llm.generate("Decide action for: " + str(input_data))
-            return decision
+            
 
         def run(self, input_data: dict) -> dict:
             # TODO: Integrate decision logic with chain execution.
-            decision = self.decide(input_data)
-            return self.chain_executor.run({"decision": decision})
+            
 
 ---------------------------------------------------------------------
 Task 8: Command-Line Interface (CLI)
@@ -314,85 +248,6 @@ Instructions:
   - Instantiate ChainExecutor, add sample nodes, and run the workflow.
   - Optionally, demonstrate Agent or ToolManager usage.
 
-Example Hint:
--------------
-    import argparse
-    from src.main.chain_executor import ChainExecutor
-    from src.main.prompt import PromptTemplate
-    from src.main.llm import DummyLLM
-    from src.main.memory import InMemoryMemory
-    from src.main.logger import setup_logger
-
-    def main():
-        parser = argparse.ArgumentParser(description="Run a LangGraph Agentic Workflow Demo.")
-        parser.add_argument("--input", type=str, default="Hello, MVP!",
-                            help="Input text for the workflow.")
-        args = parser.parse_args()
-        logger = setup_logger("cli_demo")
-        logger.info("Starting CLI demo for MVP project.")
-        executor = ChainExecutor()
-        def sample_node(state: dict) -> dict:
-            return {"processed": state.get("input", "") + " [processed]"}
-        executor.add_node("sample", sample_node, dependencies=[])
-        from src.main.state_manager import StateManager
-        executor.set_state_manager(StateManager({"input": args.input}))
-        final_state = executor.run()
-        logger.info(f"Final State from CLI: {final_state}")
-
-    if __name__ == "__main__":
-        main()
-
----------------------------------------------------------------------
-Task 9: Example Application
-----------------------------
-Objective:
-  - Create an example that demonstrates a multi-step workflow with multiple LLM calls,
-    state updates, and advanced agentic decision-making.
-
-Instructions:
-  - Create `example.py` in the project root.
-  - Build a workflow that:
-      1. Summarizes customer feedback.
-      2. Generates follow-up questions.
-      3. Combines the results into a final report.
-      4. Uses an Agent to decide further actions.
-      5. Optionally integrates with external tools (e.g., sentiment analysis).
-  - Log all steps and display the final state.
-
-Example Hint:
--------------
-    # Pseudocode for a complex workflow:
-    from src.main.chain_executor import ChainExecutor
-    from src.main.prompt import PromptTemplate
-    from src.main.llm import DummyLLM
-    from src.main.memory import InMemoryMemory
-    from src.main.logger import setup_logger
-    from src.main.agent import Agent
-    from src.main.tools import Tool, ToolManager
-
-    def main():
-        logger = setup_logger("CustomerFeedbackAnalyzer")
-        executor = ChainExecutor()
-        initial_input = {"feedback": "Customer feedback text goes here."}
-        # Add nodes: summarize, follow-up, final report, save report
-        executor.add_node("summarize", summarize_feedback, dependencies=[])
-        executor.add_node("followup", generate_followup, dependencies=["summarize"])
-        executor.add_node("report", create_final_report, dependencies=["summarize", "followup"])
-        executor.add_node("save", save_report, dependencies=["report"])
-        final_state = executor.run(initial_input)
-        logger.info(f"Final State: {final_state}")
-        # Demonstrate agent usage
-        agent = Agent(DummyLLM(), executor)
-        decision = agent.decide({"final_report": final_state.get("report", "")})
-        logger.info(f"Agent Decision: {decision}")
-        # Demonstrate tool integration
-        tool_manager = ToolManager()
-        tool_manager.add_tool(Tool("SentimentAnalyzer"))
-        tool_result = tool_manager.execute_tool("SentimentAnalyzer", final_state.get("report", ""))
-        logger.info(f"Tool Result: {tool_result}")
-
-    if __name__ == "__main__":
-        main()
 
 ---------------------------------------------------------------------
 Task 10: Testing and Documentation
