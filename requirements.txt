@@ -1,0 +1,32 @@
+# Common Packages
+requests==2.31.0
+httpx==0.24.1
+python-dotenv==1.0.0
+pydantic==1.10.11
+
+# Web Frameworks
+Flask==2.3.3
+FastAPI==0.103.2
+uvicorn==0.23.1
+gunicorn==20.1.0
+
+# Database
+SQLAlchemy==2.0.21
+psycopg2-binary==2.9.8
+
+# Task Queues
+celery==5.3.4
+
+# Security
+python-jose==3.3.0
+passlib==1.7.4
+
+# Testing
+pytest==7.4.2
+pytest-cov==4.1.0
+
+# Documentation
+Sphinx==7.2.6
+
+# Additional Libraries
+langchain==0.0.304
